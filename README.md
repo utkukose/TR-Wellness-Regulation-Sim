@@ -26,10 +26,6 @@
 > **[github.com/gamze-kose/TR-Wellness-Regulation-Sim](https://github.com/gamze-kose/TR-Wellness-Regulation-Sim)**
 > Please open issues and pull requests there.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-01-data-and-model.png" alt="The tool">
-</p>
-
 ---
 
 ## The problem
@@ -101,28 +97,115 @@ misstates what the regulation requires and when.
 
 Five steps, each consuming the output of the previous one.
 
-| Step | What happens |
-|---|---|
-| **01 · Data and model** | The record set the visitor model learns from. Records can be added and deleted, and every change retrains the model. The learned tables report how many observations each row rests on. |
-| **02 · Centres** | Applications pass the structural rules; refusals are listed with their article references. Licensed centres are assessed against Annex 4. A compliance cost layer shows which business models remain viable. |
-| **03 · Visitors** | Synthetic health tourists are drawn from the trained model and matched against the centres. A visitor may go unserved for four reasons: convalescence, which Article 10(8)(d) prohibits; no centre offering the service sought; those centres at capacity; and, for residents abroad only, Article 17, which is the sole source of the undefined outcome. |
-| **04 · Results** | The provision determining each outcome and the segment breakdowns come from the run just made; the sensitivity analysis is computed separately on its own baseline; the ten-year projection across five scenarios was computed in advance and is unaffected by any session setting. |
-| **05 · Uncertainty** | A catalogue of fourteen entries across six types, produced by reading the regulation article by article. Only the determination under Article 17 is wired into the simulation; the remaining thirteen are identified but not modelled. |
+### 01 · Data and model
+
+The record set the visitor model learns from. There are no hand-written
+probability tables; they are learned from these records. Records can be added
+and deleted, and **every change retrains the model**, with the distributions on
+the right updating immediately. The starter set of 240 records is not real
+intake data and is expected to be replaced.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-05-uncertainty.png" alt="Uncertainty catalogue">
+  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-01-data-and-model.png" alt="Record set and model training">
 </p>
 
-Of these fourteen entries only the determination under Article 17 is wired into
-the simulation; the undefined outcome in the visitor results arises from that
-entry alone. The remaining thirteen are identified but not modelled.
+The learned tables are inspectable, and each row reports how many observations
+it rests on; rows below five are flagged, because a probability learned from
+three records is not a probability. Individual profiles can be drawn from the
+model, with the draw traced node by node in topological order.
 
-Article 17 is only the first line of that catalogue. It is followed by the
-mismatch between the heading and the text of the same article, the open-ended
-service list of Article 4(1)(c), the undefined notion of convalescence in
-Article 10(8)(d) — a prohibition with severe sanctions resting on a concept
-without criteria — and the absence of any criterion for space appropriate to the
-service in Article 10(4).
+### 02 · Centres
+
+Applications first pass the **structural rules**: closed area, room count,
+institutional permits and responsible-manager conditions. The grounds for
+refusal are listed with their article references — below, the most frequent is
+the responsible manager's exclusivity requirement (11/6), followed by the
+three-year practice requirement (11/4-c) and the sixty-year condition for
+specialist physicians (10/6).
+
+Licensed centres are then assessed against the **Annex 4 inspection rules**.
+Each card is a centre, showing its setting, whether it is a centre or a unit,
+and how many violations it carries.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-02-centres.png" alt="Grounds for refusal and generated centres">
+</p>
+
+A compliance cost layer prices the obligations the regulation imposes — closed
+area, emergency room, full-time responsible manager, hospital cooperation,
+information system, and the revenue lost to the prohibition on product sales —
+and shows which business models remain viable. Fixed obligations affect small
+operators disproportionately.
+
+### 03 · Visitors
+
+Synthetic health tourists are drawn from the trained model and matched against
+the centres one by one. A visitor may go unserved for one of four reasons. A
+person in convalescence is ineligible under Article 10(8)(d), which is a
+regulatory prohibition. Finding no centre that offers the service sought, and
+finding those centres at capacity, both arise from supply not meeting demand and
+have nothing to do with the regulation. **Only for those resident abroad does
+Article 17 come into play, and only then is the outcome undefined.**
+
+Selecting a scenario opens a detail panel: the status of Article 17, the year it
+comes into force, the acceptance rate afterwards, the inspection rate and
+whether units fall within scope. Below is **S3 — Permissive determination with
+intensive inspection**: the determination is in force from 2028 and the annual
+inspection rate nearly doubles to 68%. Because the determination is made in this
+scenario, the purple **Undefined** band reads 0%.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-03-visitors.png" alt="Matching under scenario S3">
+</p>
+
+### 04 · Results
+
+This step draws on three separate sources: the matching results and segment
+breakdown come from the run just made, the sensitivity analysis is computed
+separately on its own fixed baseline, and the multi-year projection was computed
+in advance and is unaffected by any session setting.
+
+The provision determining the outcome is recorded for every visitor. In the run
+below, 79% were served, 12% found the centres offering their service at
+capacity, and 9% were ineligible under Article 10(8)(d). Separating these
+matters for policy: a capacity shortage, a narrow service mix and a legal bar
+call for entirely different interventions. The breakdown by residence, age group
+and service sought shows where the shortfall concentrates — thermal and
+balneology demand is met noticeably less often than the rest, because that
+archetype requires at least two of its core services in the same centre.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-04-results.png" alt="Results and segment breakdown">
+</p>
+
+A sensitivity analysis moves each free parameter to its lower and upper bound
+and measures the change in the outcome, and a ten-year projection tracks eight
+indicators across the five scenarios, including unlicensed operation and the
+actual inspection rate.
+
+### 05 · Uncertainty
+
+A catalogue of **fourteen entries across six types**, three bearing directly on
+health tourism, produced by reading the regulation article by article. Each
+entry marks a gap that prevents a provision from being applied on its own, and
+the list can be filtered by type.
+
+**Of these fourteen entries only the determination under Article 17 is wired
+into the simulation**; the undefined outcome in the visitor results arises from
+that entry alone. The remaining thirteen are identified but not modelled.
+
+Article 17 is only the first line. It is followed by the mismatch between the
+heading and the text of the same article, the open-ended service list of Article
+4(1)(c), the undefined notion of convalescence in Article 10(8)(d) — a
+prohibition with severe sanctions resting on a concept without criteria — and
+the absence of any criterion for space appropriate to the service in Article
+10(4).
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gamze-kose/TR-Wellness-Regulation-Sim/main/gorseller/en-05-uncertainty.png" alt="Uncertainties in the regulation">
+</p>
+
+---
 
 ## Findings
 
